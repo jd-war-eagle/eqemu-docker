@@ -1,0 +1,48 @@
+version: '2'
+# Persistent volume for the db
+volumes:
+  db_data:
+services:
+  eqemu-server:
+    container_name: eqemu-server
+    build: ./eqemu-server/
+    ports:
+      # Loginserver
+      - '127.0.0.1:5998:5998'
+      - '127.0.0.1:5998:5998/udp'
+      # Zone ports, adjust as necessary
+      - '127.0.0.1:7000-7100:7000-7100'
+      - '127.0.0.1:7000-7100:7000-7100/udp'
+      # Optional: port binding for localhost peqeditor
+      - '127.0.0.1:8080:8080'
+      # World server
+      - '127.0.0.1:9000:9000'
+      - '127.0.0.1:9000:9000/udp'
+      - '127.0.0.1:9080:9080'
+    environment:
+      # Defaults, PLEASE UPDATE BEFORE RUNNING
+      EQ_SERVER_SHORT_NAME: MyEQEmuServer
+      EQ_SERVER_LONG_NAME: MyEQEmuServer
+      EQ_SERVER_KEY: IAmGoingToGetHacked
+      EQ_SERVER_ADMIN_USERNAME: admin
+      EQ_SERVER_ADMIN_PASSWORD: password
+      # Change if you want to use a non-local login server
+      EQ_LOGIN_SERVER: 127.0.0.1
+      EQ_CHAT_SERVER: 127.0.0.1
+      # Change to use another db, if using eqemu-db container these much match
+      EQ_MYSQL_DB_HOST: eqemu-db
+      EQ_MYSQL_PASSWORD: CHANGE-ME-eqemu-is-the-best
+      EQ_MYSQL_DATABASE: eq
+      EQ_MYSQL_USER: eq
+      PEQEDITOR_PORT: 8080
+  eqemu-db:
+     container_name: eqemu-db
+     build: ./eqemu-db/
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: CHANGE-ME-root-eqemu-is-the-best
+       MYSQL_DATABASE: eq
+       MYSQL_USER: eq
+       MYSQL_PASSWORD: CHANGE-ME-eqemu-is-the-best
