@@ -92,6 +92,9 @@ then
   a2ensite peqeditor.com.conf
   service apache2 start
   service apache2 reload
+
+  mysql < /var/www/peqphpeditor/sql/schema.sql
+  mysql < /var/www/peqphpeditor/sql/expansion.sql
 fi
 
 # Create shared memory
